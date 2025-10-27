@@ -7,7 +7,9 @@ const links = [
   { to: '/productos', label: 'Productos' },
   { to: '/nosotros', label: 'Nosotros' },
   { to: '/blogs', label: 'Blog' },
-  { to: '/contacto', label: 'Contacto' }
+  { to: '/contacto', label: 'Contacto' },
+  // ✅ agregado:
+  { to: '/categorias', label: 'Categorías' }
 ];
 
 const Navbar = () => {

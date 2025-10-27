@@ -347,3 +347,137 @@ section.cta {
     height: 180px;
   }
 }
+
+/* === Ajustes para el formulario de checkout en modo oscuro === */
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea {
+  background-color: #000 !important;         /* Fondo oscuro */
+  border: 1px solid #6e14ff !important;      /* Borde neón (morado) */
+  color: #fff !important;                    /* Texto blanco */
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.checkout-form input::placeholder,
+.checkout-form textarea::placeholder {
+  color: #9a9a9a !important;                /* Placeholder visible */
+}
+
+.checkout-form input:focus,
+.checkout-form select:focus,
+.checkout-form textarea:focus {
+  border-color: #14ffec !important;         /* Borde cian en focus */
+  box-shadow: 0 0 8px #14ffec;
+  outline: none;
+}
+
+.checkout-form label {
+  color: #ffffff !important;                /* Aseguramos visibilidad de etiquetas */
+  font-weight: 600;
+}
+
+.checkout-total-box {
+  background-color: #111;
+  border: 1px solid #6e14ff;
+  color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.checkout-title {
+  font-family: 'Orbitron', sans-serif;
+  color: #148dff;
+  font-weight: bold;
+}
+
+.form-dark .form-control,
+.form-dark .form-select {
+  background-color: #0b0b10 !important;
+  color: #fff !important;
+  border: 1px solid #6e14ff !important;
+}
+.form-dark .form-control::placeholder { color: #a0aec0 !important; }
+.form-dark .form-control[readonly],
+.form-dark .form-select[disabled] {
+  background-color: #0b0b10 !important;
+  color: #cbd5f5 !important;
+  border-color: #6e14ff !important;
+  opacity: 1;
+}
+
+/* ==== Tabla oscura dentro de pantallas con .form-dark ==== */
+.form-dark .table {
+  /* Sobrescribe variables de Bootstrap para tablas */
+  --bs-table-bg: #0b0b10;              /* fondo base de celdas */
+  --bs-table-color: #ffffff;           /* color de texto */
+  --bs-table-striped-bg: #10111d;      /* fondo de filas "striped" */
+  --bs-table-hover-bg: #131427;        /* fondo al pasar el mouse */
+  --bs-table-border-color: #6e14ff33;  /* color de bordes */
+  background-color: var(--bs-table-bg) !important;
+  color: var(--bs-table-color) !important;
+  border: 1px solid var(--bs-table-border-color);
+}
+
+/* Encabezado y pie de la tabla */
+.form-dark .table thead th {
+  background-color: #0f0f16 !important;
+  color: #cbd5f5 !important;
+  border-color: #6e14ff33 !important;
+}
+.form-dark .table tfoot th,
+.form-dark .table tfoot td {
+  background-color: #0d0d14 !important;
+  color: #ffffff !important;
+  border-top: 1px solid #6e14ff66 !important;
+  font-weight: 700;
+}
+
+/* Asegura que ninguna celda vuelva a fondo blanco */
+.form-dark .table td,
+.form-dark .table th {
+  background-color: transparent !important;
+  border-color: #6e14ff33 !important;
+}
+
+/* Placeholder de imagen (el cuadrito de la izquierda) */
+.form-dark .ratio.bg-light {
+  background-color: #0d0d14 !important;
+  border: 1px solid #6e14ff33 !important;
+}
+
+/* Línea que dice "Total pagado:" */
+.form-dark .table tfoot tr {
+  background-color: #0d0d14 !important;
+}
+
+/* === Forzar BLOQUE DE CHECKOUT a fondo negro === */
+
+/* 1) Si el contenedor tiene .form-dark, asegúralo en negro */
+.form-dark {
+  background-color: #000 !important;
+}
+
+/* 2) El card que envuelve el checkout suele ser .card.shadow-sm */
+.card.shadow-sm {
+  background-color: #000 !important;
+}
+
+/* 3) Tabla del carrito a oscuro aunque sea .table normal */
+.card .table,
+.card .table td,
+.card .table th,
+.card .table thead th,
+.card .table tfoot th,
+.card .table tfoot td {
+  background-color: #0b0b10 !important;
+  color: #fff !important;
+  border-color: #6e14ff33 !important;
+}
+
+/* 4) Ligeros detalles para “Total a pagar”/contenedor */
+.checkout-total-box,
+.card .table tfoot tr {
+  background-color: #0d0d14 !important;
+  border-color: #6e14ff66 !important;
+}
