@@ -481,3 +481,101 @@ section.cta {
   background-color: #0d0d14 !important;
   border-color: #6e14ff66 !important;
 }
+
+/* === Categorías: título con estilo del sitio === */
+.card .card-body .text-truncate {
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #ffffff !important;          /* blanco, no gris */
+  text-align: center;
+}
+
+/* Hover con glow neón como el menú */
+.card:hover .card-body .text-truncate {
+  color: #14ffec !important;
+  text-shadow: 0 0 6px #14ffec, 0 0 12px #6e14ff66;
+}
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Esto crea un espacio entre el logo y el texto */
+  margin-right: 12px; /* Separación extra antes del menú */
+}
+
+.navbar-nav .nav-link {
+  margin-left: 18px; /* da espacio entre el logo y "productos" */
+}
+.navbar-brand {
+  position: relative;
+  left: -60px; /* Puedes ajustar a -30px o -40px si quieres más */
+}
+/* Contenedor de los tres cubos del footer (justo debajo de "Categoría X | Y | Z") */
+.footer-cubes {                /* <-- si tu contenedor usa otro nombre, cámbialo aquí */
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+/* Resetea los cubos blancos */
+.footer-cubes > div {
+  width: 60px;
+  height: 36px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  filter: brightness(0) invert(1);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.footer-logos img {
+  height: 40px;              /* Tamaño visible */
+  width: auto;               /* Mantiene proporciones correctas */
+  object-fit: contain;       /* Evita distorsión */
+  filter: brightness(0) invert(1); /* Los vuelve blancos neón */
+}
+
+.footer-logos {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 16px 0;
+}
+
+.footer-logos img {
+  height: 40px;       /* tamaño visible */
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* se ven blancos en tema oscuro */
+}
+
+
+/* --- Footer Logos SIEMPRE visibles --- */
+.footer-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px; /* separa mejor las imágenes */
+  margin-top: 12px;
+}
+
+/* Ajuste del tamaño visible */
+.footer-logos img {
+  height: 48px;     /* tamaño fijo y visible */
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1) invert(0); /* las deja en color normal */
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Efecto hover futurista (si quieres un toque gamer) */
+.footer-logos img:hover {
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 6px #14ffec);
+}
+

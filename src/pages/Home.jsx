@@ -53,6 +53,17 @@ const Home = () => (
       </div>
     </section>
 
+    {/* Métodos de pago */}
+    <section>
+      <div className="container">
+        <div className="footer-logos" aria-label="Métodos de pago aceptados">
+          <img src="/img/visa.jpg"        alt="Pago con Visa"        title="Visa" />
+          <img src="/img/mastercardd.jpg"  alt="Pago con Mastercard"  title="Mastercard" />
+          <img src="/img/webpay.jpg"      alt="Pago con Webpay"      title="Webpay" />
+        </div>
+      </div>
+    </section>
+
     <section className="cta">
       <div className="container">
         <h2>¿Listo para subir de nivel?</h2>

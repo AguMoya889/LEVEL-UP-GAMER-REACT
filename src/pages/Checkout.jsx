@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { products } from '../data/products.js'; // ← ✅ NUEVO
+import { regionesYComunas } from '../data/regions.js'; // ADD ✅
 
 function clp(n) {
   return Number(n || 0).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
@@ -35,6 +36,25 @@ export default function Checkout() {
     indicaciones: '',
   });
 
+  // ADD ✅ listas derivadas desde regions.js
+  const regiones = useMemo(() => {
+    try {
+      return Object.keys(regionesYComunas).filter(
+        (r) => r && r.toLowerCase() !== 'seleccione región'
+      );
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const comunas = useMemo(() => {
+    try {
+      return form.region ? (regionesYComunas[form.region] || []) : [];
+    } catch {
+      return [];
+    }
+  }, [form.region]);
+
   // Autocompletar desde el usuario si está logueado
   useEffect(() => {
     if (!user) return;
@@ -51,6 +71,13 @@ export default function Checkout() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // ADD ✅ si cambia región, limpiamos comuna
+    if (name === 'region') {
+      setForm((f) => ({ ...f, region: value, comuna: '' }));
+      return;
+    }
+
     setForm((f) => ({ ...f, [name]: value }));
   };
 
@@ -189,11 +216,11 @@ export default function Checkout() {
 
                   <div className="col-md-6">
                     <label className="form-label">Nombre *</label>
-                    <input name="nombre" value={form.nombre} onChange={handleChange} className="form-control" />
+                    <input name="nombre" value={form.nombre} onChange={handleChange} className="form-control" required />
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">Apellido *</label>
-                    <input name="apellido" value={form.apellido} onChange={handleChange} className="form-control" />
+                    <input name="apellido" value={form.apellido} onChange={handleChange} className="form-control" required />
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">Correo *</label>
@@ -203,6 +230,7 @@ export default function Checkout() {
                       value={form.email}
                       onChange={handleChange}
                       className="form-control"
+                      required
                     />
                   </div>
 
@@ -213,7 +241,7 @@ export default function Checkout() {
 
                   <div className="col-md-6">
                     <label className="form-label">Calle *</label>
-                    <input name="calle" value={form.calle} onChange={handleChange} className="form-control" />
+                    <input name="calle" value={form.calle} onChange={handleChange} className="form-control" required />
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">Departamento (opcional)</label>
@@ -227,22 +255,30 @@ export default function Checkout() {
 
                   <div className="col-md-6">
                     <label className="form-label">Región *</label>
-                    <select name="region" value={form.region} onChange={handleChange} className="form-select">
+                    <select name="region" value={form.region} onChange={handleChange} className="form-select" required>
                       <option value="">Seleccionar…</option>
                       <option>Región Metropolitana de Santiago</option>
                       <option>Región de Valparaíso</option>
                       <option>Región del Biobío</option>
                       <option>Región de La Araucanía</option>
+                      {/* ADD ⤵ regiones dinámicas desde regions.js */}
+                      {regiones.map((r) => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">Comuna *</label>
-                    <select name="comuna" value={form.comuna} onChange={handleChange} className="form-select">
+                    <select name="comuna" value={form.comuna} onChange={handleChange} className="form-select" required>
                       <option value="">Seleccionar…</option>
                       <option>Santiago</option>
                       <option>Providencia</option>
                       <option>Las Condes</option>
                       <option>Cerrillos</option>
+                      {/* ADD ⤵ comunas dinámicas según región elegida */}
+                      {comunas.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
                     </select>
                   </div>
 

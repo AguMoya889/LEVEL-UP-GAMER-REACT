@@ -9,11 +9,14 @@ const Footer = () => (
         <span>|</span>
         <a href="#" className="text-light">Categoría Z</a>
       </div>
+
+      {/* ✅ Métodos de pago (ACTUALIZADO A .jpg si tus imágenes son .jpg) */}
       <div className="footer-logos">
-        <img src="/img/visa.png" alt="Visa" />
-        <img src="/img/mastercard.png" alt="MasterCard" />
-        <img src="/img/webpay.png" alt="WebPay" />
+        <img src="/img/visa.jpg" alt="Visa" />
+        <img src="/img/mastercardd.jpg" alt="MasterCard" />
+        <img src="/img/webpay.jpg" alt="WebPay" />
       </div>
+
       <form className="d-flex flex-column flex-md-row justify-content-center align-items-md-end gap-3">
         <div className="text-start w-100 w-md-auto" style={{ maxWidth: '280px' }}>
           <label htmlFor="correo-footer" className="form-label">Correo electrónico</label>
