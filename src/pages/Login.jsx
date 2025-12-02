@@ -13,7 +13,7 @@ const Login = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setMessage(null);
 
@@ -27,7 +27,8 @@ const Login = () => {
       return;
     }
 
-    const result = login({ email: form.correo, password: form.password });
+    try {
+      const result = await login({ email: form.correo, password: form.password });
     if (!result.ok) {
       if (
         window.confirm(
@@ -62,6 +63,13 @@ const Login = () => {
     setTimeout(() => {
       navigate('/');
     }, 1200);
+    } catch (error) {
+      console.error('Error en login:', error);
+      setMessage({
+        type: 'danger',
+        text: '❌ Error al iniciar sesión. Intenta nuevamente.'
+      });
+    }
   };
 
   return (
