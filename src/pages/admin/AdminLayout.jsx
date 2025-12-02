@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { products } from '../../data/products.js';
+import { getAllProducts } from '../../services/productService';
 
 const PURCHASES_KEY = 'historialCompras';
 const CART_KEY = 'carrito';
@@ -52,23 +52,29 @@ const loadCart = () => {
   }
 };
 
-const calculateStats = ({ purchases, users, pendingCart }) => {
-  const totalVentas = purchases.reduce((sum, compra) => sum + (compra.total || 0), 0);
-  const productosVendidos = purchases.reduce(
+const calculateStats = ({ purchases, users, pendingCart, products }) => {
+  // Validar que los arrays existan
+  const safePurchases = purchases || [];
+  const safeUsers = users || [];
+  const safePendingCart = pendingCart || [];
+  const safeProducts = products || [];
+
+  const totalVentas = safePurchases.reduce((sum, compra) => sum + (compra.total || 0), 0);
+  const productosVendidos = safePurchases.reduce(
     (acc, compra) => acc + (compra.productos?.reduce((sum, item) => sum + (item.cantidad || 0), 0) ?? 0),
     0
   );
 
-  const categorias = products.reduce((registry, product) => {
+  const categorias = safeProducts.reduce((registry, product) => {
     registry[product.categoria] = (registry[product.categoria] || 0) + 1;
     return registry;
   }, {});
 
-  const usuariosDuoc = users.filter((u) =>
+  const usuariosDuoc = safeUsers.filter((u) =>
     u.correo?.toLowerCase().endsWith('@duocuc.cl') || u.correo?.toLowerCase().endsWith('@profesor.duoc.cl')
   ).length;
 
-  const vendidasPorProducto = purchases.reduce((registry, compra) => {
+  const vendidasPorProducto = safePurchases.reduce((registry, compra) => {
     compra.productos?.forEach((producto) => {
       registry[producto.nombre] = (registry[producto.nombre] || 0) + (producto.cantidad || 1);
     });
@@ -80,14 +86,14 @@ const calculateStats = ({ purchases, users, pendingCart }) => {
     .slice(0, 5);
 
   return {
-    totalUsuarios: users.length,
+    totalUsuarios: safeUsers.length,
     totalVentas,
     productosVendidos,
     categorias,
     usuariosDuoc,
-    stockTotal: products.length * 10, // Sin inventario real, se estima
+    stockTotal: safeProducts.length * 10, // Sin inventario real, se estima
     topProductos,
-    carritosPendientes: pendingCart.length > 0 ? 1 : 0
+    carritosPendientes: safePendingCart.length > 0 ? 1 : 0
   };
 };
 
@@ -97,6 +103,8 @@ const AdminLayout = () => {
   const location = useLocation();
   const [purchases, setPurchases] = useState(() => loadPurchases());
   const [pendingCart, setPendingCart] = useState(() => loadCart());
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user?.esAdmin) {
@@ -104,6 +112,22 @@ const AdminLayout = () => {
       navigate('/login', { replace: true });
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const refreshData = () => {
     setPurchases(loadPurchases());
@@ -117,8 +141,8 @@ const AdminLayout = () => {
   }, []);
 
   const stats = useMemo(
-    () => calculateStats({ purchases, users, pendingCart }),
-    [purchases, users, pendingCart]
+    () => calculateStats({ purchases, users, pendingCart, products }),
+    [purchases, users, pendingCart, products]
   );
 
   const currentPath = location.pathname.replace('/admin', '') || '/';
@@ -134,9 +158,10 @@ const AdminLayout = () => {
       pendingCart,
       products,
       stats,
-      refreshData
+      refreshData,
+      loading
     }),
-    [users, purchases, pendingCart, stats]
+    [users, purchases, pendingCart, products, stats, loading]
   );
 
   const handleLogout = () => {
@@ -218,9 +243,17 @@ const AdminLayout = () => {
           ))}
         </div>
 
-        <div className="bg-dark text-light p-4 rounded">
-          <Outlet context={outletContext} />
-        </div>
+        {loading ? (
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-dark text-light p-4 rounded">
+            <Outlet context={outletContext} />
+          </div>
+        )}
       </main>
 
       <footer className="bg-dark text-light text-center py-3 mt-auto">
