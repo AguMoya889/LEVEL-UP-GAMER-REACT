@@ -97,7 +97,7 @@ export default function Checkout() {
   };
 
   // ⬇ Redirige a /checkout/exito o /checkout/error con los datos
-  const handlePagar = (e) => {
+  const handlePagar = async (e) => {
     e.preventDefault();
 
     // 1) Atajo para simular pago fallido: /checkout?fail=1
@@ -113,18 +113,28 @@ export default function Checkout() {
     // 2) Flujo normal con validación
     if (!validar()) return;
 
-    const result = checkout(); // tu lógica actual
+    const result = await checkout(form);
+    
     if (!result.ok) {
-      const orderId = 'ORDER' + Date.now().toString().slice(-6);
       navigate('/checkout/error', {
-        state: { orderId, form, items, total, message: result.message }
+        state: { 
+          orderId: result.orderId || 'ERROR',
+          form, 
+          items, 
+          total, 
+          message: result.message 
+        }
       });
       return;
     }
 
-    const orderId = 'ORDER' + Date.now().toString().slice(-6);
     navigate('/checkout/exito', {
-      state: { orderId, form, items, total }
+      state: { 
+        orderId: result.orderId,
+        form, 
+        items, 
+        total 
+      }
     });
   };
   // ⬆
