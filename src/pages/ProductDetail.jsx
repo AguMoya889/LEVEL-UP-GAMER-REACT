@@ -1,28 +1,59 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { findProduct, products } from '../data/products.js';
+import { getProductBySlug } from '../services/productService.js';
 import { useCart } from '../context/CartContext.jsx';
 
 const ProductDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { addItem } = useCart();
-
-  const product = findProduct(slug);
+  
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!product) {
-      navigate('/productos', { replace: true });
-    }
-  }, [product, navigate]);
+    const loadProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await getProductBySlug(slug);
+        setProduct(data);
+        
+        if (data.relacionados && data.relacionados.length > 0) {
+          setRelated(data.relacionados);
+        }
+        
+        setError(null);
+      } catch (err) {
+        console.error('Error cargando producto:', err);
+        setError('Producto no encontrado');
+        navigate('/productos', { replace: true });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!product) {
-    return null;
+    loadProduct();
+  }, [slug, navigate]);
+
+  if (loading) {
+    return (
+      <section>
+        <div className="container">
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
 
-  const related = products.filter((item) =>
-    product.relacionados?.includes(item.slug)
-  );
+  if (error || !product) {
+    return null;
+  }
 
   const handleAdd = () => {
     addItem(product, 1);
