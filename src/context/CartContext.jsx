@@ -1,34 +1,21 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useAuth } from './AuthContext.jsx';
+import api from '../services/api';
 
 const CartContext = createContext(null);
 
 const CART_KEY = 'carrito';
-const PURCHASES_KEY = 'historialCompras';
-
-const loadCart = () => {
-  try {
-    const raw = localStorage.getItem(CART_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (error) {
-    console.error('No se pudo cargar el carrito', error);
-    return [];
-  }
-};
-
-const loadPurchases = () => {
-  try {
-    const raw = localStorage.getItem(PURCHASES_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (error) {
-    console.error('No se pudo leer el historial de compras', error);
-    return [];
-  }
-};
 
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
-  const [items, setItems] = useState(() => loadCart());
+  const [items, setItems] = useState(() => {
+    try {
+      const raw = localStorage.getItem(CART_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (error) {
+      return [];
+    }
+  });
 
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(items));
@@ -47,13 +34,6 @@ export const CartProvider = ({ children }) => {
   const discountPercentage = useMemo(() => {
     if (user?.descuento) {
       return user.descuento;
-    }
-    const correoGuardado = localStorage.getItem('correoUsuario') ?? '';
-    if (
-      correoGuardado.endsWith('@duocuc.cl') ||
-      correoGuardado.endsWith('@profesor.duoc.cl')
-    ) {
-      return 20;
     }
     return 0;
   }, [user]);
@@ -107,24 +87,44 @@ export const CartProvider = ({ children }) => {
     setItems([]);
   };
 
-  const checkout = () => {
+  const checkout = async (checkoutData) => {
     if (items.length === 0) {
       return { ok: false, message: 'Tu carrito está vacío' };
     }
 
-    const purchases = loadPurchases();
-    const nuevaCompra = {
-      usuario: user?.correo ?? 'invitado',
-      fecha: new Date().toLocaleString('es-CL'),
-      total: total,
-      productos: items.map((item) => ({ ...item })),
-      descuentoAplicado: discountAmount
-    };
+    try {
+      const response = await api.post('/orders/checkout', {
+        user: checkoutData,
+        items: items.map(item => ({
+          productSlug: item.slug,
+          quantity: item.cantidad,
+          price: item.precio
+        })),
+        subtotal: subtotal,
+        discount: discountAmount,
+        total: total
+      });
 
-    const updated = [...purchases, nuevaCompra];
-    localStorage.setItem(PURCHASES_KEY, JSON.stringify(updated));
-    clearCart();
-    return { ok: true };
+      if (response.data.ok) {
+        clearCart();
+        return { 
+          ok: true, 
+          message: 'Compra realizada exitosamente',
+          orderId: response.data.orderId 
+        };
+      } else {
+        return { 
+          ok: false, 
+          message: response.data.message || 'Error al procesar la compra'
+        };
+      }
+    } catch (error) {
+      console.error('Error en checkout:', error);
+      return { 
+        ok: false, 
+        message: error.response?.data?.message || 'Error al procesar la compra' 
+      };
+    }
   };
 
   const value = useMemo(
