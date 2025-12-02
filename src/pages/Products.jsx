@@ -1,114 +1,101 @@
-import React, { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
-import ProductCard from '../components/ProductCard.jsx';
-import { products } from '../data/products.js';
+import { useEffect, useState } from 'react';
+import { getAllProducts, searchProducts, getProductsByCategory } from '../services/productService';
+import ProductCard from '../components/ProductCard';
 
-const Products = () => {
-  const { search } = useLocation();
+export default function Products() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
-  const filtered = useMemo(() => {
-    const params = new URLSearchParams(search);
-    const cat = params.get('cat');
-    if (!cat) return products;
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllProducts();
+        setProducts(data);
+      } catch (err) {
+        console.error('Error al cargar productos:', err);
+        setError('No se pudieron cargar los productos');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const normalize = (t) => t?.toString().toLowerCase() || '';
+    loadProducts();
+  }, []);
 
-    return products.filter((p) => {
-      const productCat = normalize(p.category);
-      const productName = normalize(p.name || p.title || p.slug);
-      const catNorm = normalize(cat);
+  const categories = [...new Set(products.map(p => p.categoria))];
 
-      // 🎮 Consolas → incluye consolas, controles, play, xbox, nintendo
-      if (catNorm.includes('consol') && (
-        productName.includes('consol') ||
-        productName.includes('play') ||
-        productName.includes('ps4') ||
-        productName.includes('ps5') ||
-        productName.includes('xbox') ||
-        productName.includes('nintendo') ||
-        productName.includes('switch') ||
-        productName.includes('control') ||
-        productName.includes('mando')
-      )) return true;
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !selectedCategory || product.categoria === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
-      // 💻 Computadores
-      if (catNorm.includes('comput') && (
-        productName.includes('pc') ||
-        productName.includes('computador') ||
-        productName.includes('computadora') ||
-        productName.includes('laptop') ||
-        productName.includes('notebook') ||
-        productName.includes('torre') ||
-        productName.includes('setup')
-      )) return true;
+  if (loading) {
+    return (
+      <div className="container my-4 text-center py-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+        <p className="mt-3">Cargando productos...</p>
+      </div>
+    );
+  }
 
-      // ⌨️ Periféricos → mouse, teclado, mousepad, audífonos, headset
-      if (catNorm.includes('perifer') && (
-        productName.includes('mouse') ||
-        productName.includes('teclado') ||
-        productName.includes('mousepad') ||
-        productName.includes('pad') ||
-        productName.includes('audif') ||
-        productName.includes('audí') ||
-        productName.includes('headset') ||
-        productName.includes('auricular')
-      )) return true;
-
-      // 🖥️ Monitores
-      if (catNorm.includes('monitor') && (
-        productName.includes('monitor') ||
-        productName.includes('pantalla')
-      )) return true;
-
-      // 🎲 Juegos de mesa → ahora incluye "Catan" y "Carcassonne"
-      if (catNorm.includes('juegos de mesa') && (
-        productName.includes('mesa') ||
-        productName.includes('board') ||
-        productName.includes('table') ||
-        productName.includes('catan') ||
-        productName.includes('carcass')
-      )) return true;
-
-      // 🪑 Sillas gamer
-      if (catNorm.includes('silla') && (
-        productName.includes('silla') ||
-        productName.includes('gamer chair') ||
-        productName.includes('chair')
-      )) return true;
-
-      // ✅ Fallback: si coincide exactamente con category
-      return productCat === catNorm;
-    });
-  }, [search]);
+  if (error) {
+    return (
+      <div className="container my-4">
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <section className="py-5 text-center">
-        <div className="container">
-          <h1 className="fw-bold">Catálogo de Productos</h1>
-          <p className="lead text-secondary">Artículos oficiales Level-Up Gamer</p>
+    <div className="container my-4">
+      <h2>Nuestros Productos</h2>
+      
+      <div className="row mb-4">
+        <div className="col-md-6">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Buscar productos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-      </section>
+        <div className="col-md-6">
+          <select
+            className="form-select"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">Todas las categorías</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-      <section>
-        <div className="container">
-          <div className="row g-4">
-            {filtered.length > 0 ? (
-              filtered.map((product) => (
-                <div className="col-12 col-md-6 col-lg-3" key={product.slug}>
-                  <ProductCard product={product} />
-                </div>
-              ))
-            ) : (
-              <div className="col-12 text-center text-muted">
-                No hay productos para esta categoría.
-              </div>
-            )}
+      <div className="row g-4">
+        {filteredProducts.map((product) => (
+          <div key={product.slug} className="col-12 col-sm-6 col-md-4 col-lg-3">
+            <ProductCard product={product} />
           </div>
+        ))}
+      </div>
+      
+      {filteredProducts.length === 0 && (
+        <div className="alert alert-info mt-4">
+          No se encontraron productos con los filtros seleccionados.
         </div>
-      </section>
-    </>
+      )}
+    </div>
   );
-};
-
-export default Products;
+}
