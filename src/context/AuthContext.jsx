@@ -1,126 +1,78 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
-const ADMIN_CREDENTIALS = {
-  email: 'admin@levelupgamer.com',
-  password: 'admin123',
-  name: 'Administrador'
-};
-
 const SESSION_KEY = 'usuarioActivo';
-const USERS_KEY = 'usuarios';
-
-const loadSession = () => {
-  try {
-    const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (error) {
-    console.error('No se pudo leer la sesión almacenada', error);
-    return null;
-  }
-};
-
-const loadUsers = () => {
-  try {
-    const raw = localStorage.getItem(USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (error) {
-    console.error('No se pudieron cargar los usuarios', error);
-    return [];
-  }
-};
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => loadSession());
-  const [users, setUsers] = useState(() => loadUsers());
+  const [user, setUser] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  });
+
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    if (user) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
+      sessionStorage.setItem('userEmail', user.correo);
+    } else {
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem('userEmail');
+    }
   }, [user]);
 
-  useEffect(() => {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }, [users]);
+  const login = async ({ email, password }) => {
+    try {
+      const response = await api.post('/users/login', { email, password });
+      const { ok, admin, user: userData, message } = response.data;
 
-  const login = ({ email, password }) => {
-    const trimmedEmail = email.trim().toLowerCase();
+      if (!ok) {
+        return { ok: false, message };
+      }
 
-    if (
-      trimmedEmail === ADMIN_CREDENTIALS.email &&
-      password === ADMIN_CREDENTIALS.password
-    ) {
-      const adminUser = {
-        nombre: ADMIN_CREDENTIALS.name,
-        correo: ADMIN_CREDENTIALS.email,
-        esAdmin: true,
-        descuento: 0
+      setUser(userData);
+      return { ok: true, admin };
+    } catch (error) {
+      console.error('Error en login:', error);
+      return { 
+        ok: false, 
+        message: error.response?.data?.message || 'Error al iniciar sesión' 
       };
-      setUser(adminUser);
-      return { ok: true, admin: true };
     }
+  };
 
-    const match = users.find(
-      (record) =>
-        record.correo.toLowerCase() === trimmedEmail &&
-        record.password === password
-    );
+  const register = async (payload) => {
+    try {
+      const response = await api.post('/users/register', payload);
+      const { ok, message, descuento, user: userData } = response.data;
 
-    if (!match) {
-      return { ok: false, message: 'Credenciales inválidas' };
+      if (!ok) {
+        return { ok: false, message };
+      }
+
+      setUser(userData);
+      return { ok: true, descuento };
+    } catch (error) {
+      console.error('Error en registro:', error);
+      return { 
+        ok: false, 
+        message: error.response?.data?.message || 'Error al registrar usuario' 
+      };
     }
-
-    const userSession = {
-      nombre: match.nombre,
-      correo: match.correo,
-      descuento: match.descuento || 0,
-      esAdmin: false
-    };
-    setUser(userSession);
-    return { ok: true };
   };
 
   const logout = () => {
     setUser(null);
   };
 
-  const register = (payload) => {
-    const correo = payload.correo.trim().toLowerCase();
-    const run = payload.run.trim();
-
-    if (users.some((record) => record.correo.toLowerCase() === correo)) {
-      return { ok: false, message: 'El correo ya está registrado' };
-    }
-
-    const descuento = correo.endsWith('@duocuc.cl') || correo.endsWith('@profesor.duoc.cl') ? 20 : 0;
-
-    const newUser = {
-      ...payload,
-      correo,
-      run,
-      descuento
-    };
-
-    setUsers((current) => [...current, newUser]);
-    const userSession = {
-      nombre: newUser.nombre,
-      correo: newUser.correo,
-      descuento: newUser.descuento,
-      esAdmin: false
-    };
-    setUser(userSession);
-    localStorage.setItem('correoUsuario', correo);
-    return { ok: true, descuento };
-  };
-
   const value = useMemo(
-    () => ({
-      user,
-      users,
-      login,
-      register,
-      logout
-    }),
+    () => ({ user, users, login, register, logout }),
     [user, users]
   );
 
