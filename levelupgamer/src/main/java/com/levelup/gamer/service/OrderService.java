@@ -28,10 +28,7 @@ public class OrderService {
     
     @Autowired
     private UserRepository userRepository;
-    
-    /**
-     * Procesar checkout - replica la lógica del CartContext
-     */
+// Procesar checkout - replica la lógica del CartContext
     @Transactional
     public CheckoutResponse processCheckout(CheckoutRequest request, String userEmail) {
         if (request.getItems() == null || request.getItems().isEmpty()) {
@@ -106,52 +103,31 @@ public class OrderService {
         
         return new CheckoutResponse(true, "Compra realizada exitosamente", orderId);
     }
-    
-    /**
-     * Obtener todas las órdenes
-     */
+// Obtener todas las órdenes
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
-    
-    /**
-     * Obtener orden por ID
-     */
+// Obtener orden por ID
     public Order getOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
-    
-    /**
-     * Obtener orden por OrderId
-     */
+// Obtener orden por OrderId
     public Order getOrderByOrderId(String orderId) {
         return orderRepository.findByOrderId(orderId).orElse(null);
     }
-    
-    /**
-     * Obtener órdenes de un usuario
-     */
+// Obtener órdenes de un usuario
     public List<Order> getOrdersByUser(Long userId) {
         return orderRepository.findByUserIdOrderByFechaDesc(userId);
     }
-    
-    /**
-     * Obtener órdenes por email
-     */
+// Obtener órdenes por email
     public List<Order> getOrdersByEmail(String email) {
         return orderRepository.findByUsuarioCorreo(email.toLowerCase());
     }
-    
-    /**
-     * Obtener órdenes por estado
-     */
+// Obtener órdenes por estado
     public List<Order> getOrdersByStatus(String estado) {
         return orderRepository.findByEstado(estado);
     }
-    
-    /**
-     * Actualizar estado de orden
-     */
+// Actualizar estado de orden
     public Order updateOrderStatus(Long id, String estado) {
         Order order = orderRepository.findById(id).orElse(null);
         if (order == null) {

@@ -12,55 +12,34 @@ public class ProductService {
     
     @Autowired
     private ProductRepository productRepository;
-    
-    /**
-     * Obtener todos los productos
-     */
+// Obtener todos los productos
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
-    
-    /**
-     * Obtener producto por ID
-     */
+// Obtener producto por ID
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElse(null);
     }
-    
-    /**
-     * Obtener producto por slug
-     */
+// Obtener producto por slug
     public Product getProductBySlug(String slug) {
         return productRepository.findBySlug(slug).orElse(null);
     }
-    
-    /**
-     * Obtener productos por categoría
-     */
+// Obtener productos por categoría
     public List<Product> getProductsByCategory(String categoria) {
         return productRepository.findByCategoria(categoria);
     }
-    
-    /**
-     * Buscar productos por nombre
-     */
+// Buscar productos por nombre
     public List<Product> searchProducts(String query) {
         return productRepository.findByNombreContainingIgnoreCase(query);
     }
-    
-    /**
-     * Crear producto
-     */
+// Crear producto
     public Product createProduct(Product product) {
         if (productRepository.existsBySlug(product.getSlug())) {
             throw new RuntimeException("Ya existe un producto con ese slug");
         }
         return productRepository.save(product);
     }
-    
-    /**
-     * Actualizar producto
-     */
+// Actualizar producto
     public Product updateProduct(Long id, Product product) {
         Product existing = productRepository.findById(id).orElse(null);
         if (existing == null) {
@@ -80,17 +59,11 @@ public class ProductService {
         
         return productRepository.save(existing);
     }
-    
-    /**
-     * Eliminar producto
-     */
+// Eliminar producto
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
-    
-    /**
-     * Obtener productos destacados (primeros 4)
-     */
+// Obtener productos destacados (primeros 4)
     public List<Product> getFeaturedProducts() {
         List<Product> all = productRepository.findAll();
         return all.size() > 4 ? all.subList(0, 4) : all;

@@ -92,7 +92,9 @@ public class OrderItem {
     
     public void setPrecio(Double precio) {
         this.precio = precio;
-        this.subtotal = precio * cantidad;
+        if (precio != null && cantidad != null) {
+            this.subtotal = precio * cantidad;
+        }
     }
     
     public Integer getCantidad() {
@@ -101,7 +103,9 @@ public class OrderItem {
     
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
-        this.subtotal = precio * cantidad;
+        if (precio != null && cantidad != null) {
+            this.subtotal = precio * cantidad;
+        }
     }
     
     public Double getSubtotal() {

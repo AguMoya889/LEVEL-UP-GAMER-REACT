@@ -26,10 +26,7 @@ public class StatsService {
     
     @Autowired
     private OrderRepository orderRepository;
-    
-    /**
-     * Obtener estadísticas generales del sistema (para AdminDashboard)
-     */
+// Obtener estadísticas generales del sistema (para AdminDashboard)
     public StatsDTO getGeneralStats() {
         StatsDTO stats = new StatsDTO();
         
@@ -79,10 +76,7 @@ public class StatsService {
         
         return stats;
     }
-    
-    /**
-     * Obtener categorías únicas
-     */
+// Obtener categorías únicas
     public List<String> getCategories() {
         return productRepository.findAll().stream()
             .map(Product::getCategoria)

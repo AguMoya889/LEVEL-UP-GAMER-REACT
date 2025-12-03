@@ -17,10 +17,7 @@ public class AdminController {
     @Autowired
     private StatsService statsService;
     
-    /**
-     * GET /api/v1/admin/stats
-     * Obtener estadísticas generales - para AdminDashboard
-     */
+    // GET /api/v1/admin/stats Obtener estadísticas generales - para AdminDashboard
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<StatsDTO>> getStats() {
         try {
@@ -32,10 +29,7 @@ public class AdminController {
         }
     }
     
-    /**
-     * GET /api/v1/admin/categories
-     * Obtener todas las categorías únicas de productos
-     */
+    // GET /api/v1/admin/categories Obtener todas las categorías únicas de productos
     @GetMapping("/categories")
     public ResponseEntity<ApiResponse<List<String>>> getCategories() {
         try {

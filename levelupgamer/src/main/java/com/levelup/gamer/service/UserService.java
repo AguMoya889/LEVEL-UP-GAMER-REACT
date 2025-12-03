@@ -20,10 +20,7 @@ public class UserService {
     
     @Autowired
     private UserRepository userRepository;
-    
-    /**
-     * Login - replica la lógica del AuthContext
-     */
+// Login - replica la lógica del AuthContext
     public LoginResponse login(LoginRequest request) {
         String email = request.getEmail().trim().toLowerCase();
         
@@ -55,10 +52,7 @@ public class UserService {
         
         return new LoginResponse(true, false, userDTO);
     }
-    
-    /**
-     * Register - replica la lógica del AuthContext
-     */
+// Register - replica la lógica del AuthContext
     public RegisterResponse register(RegisterRequest request) {
         String correo = request.getCorreo().trim().toLowerCase();
         String run = request.getRun().trim();
@@ -113,10 +107,7 @@ public class UserService {
         
         return new RegisterResponse(true, null, descuento, userDTO);
     }
-    
-    /**
-     * Obtener todos los usuarios
-     */
+// Obtener todos los usuarios
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
             .map(user -> {
@@ -134,10 +125,7 @@ public class UserService {
             })
             .collect(Collectors.toList());
     }
-    
-    /**
-     * Obtener usuario por ID
-     */
+// Obtener usuario por ID
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null) return null;
@@ -154,10 +142,7 @@ public class UserService {
         dto.setDireccion(user.getDireccion());
         return dto;
     }
-    
-    /**
-     * Obtener usuario por correo
-     */
+// Obtener usuario por correo
     public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByCorreo(email.trim().toLowerCase()).orElse(null);
         if (user == null) return null;

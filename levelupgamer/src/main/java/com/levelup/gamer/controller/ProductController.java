@@ -17,10 +17,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
     
-    /**
-     * GET /api/v1/products
-     * Obtener todos los productos - equivalente a products.js
-     */
+    // GET /api/v1/products Obtener todos los productos - equivalente a products.js
     @GetMapping
     public ResponseEntity<ApiResponse<List<Product>>> getAllProducts() {
         try {
@@ -32,10 +29,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * GET /api/v1/products/{id}
-     * Obtener producto por ID
-     */
+    // GET /api/v1/products/{id} Obtener producto por ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Product>> getProductById(@PathVariable Long id) {
         try {
@@ -50,10 +44,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * GET /api/v1/products/slug/{slug}
-     * Obtener producto por slug - equivalente a findProduct()
-     */
+    // GET /api/v1/products/slug/{slug} Obtener producto por slug - equivalente a findProduct()
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ApiResponse<Product>> getProductBySlug(@PathVariable String slug) {
         try {
@@ -68,10 +59,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * GET /api/v1/products/category/{categoria}
-     * Obtener productos por categoría
-     */
+    // GET /api/v1/products/category/{categoria} Obtener productos por categoría
     @GetMapping("/category/{categoria}")
     public ResponseEntity<ApiResponse<List<Product>>> getProductsByCategory(@PathVariable String categoria) {
         try {
@@ -83,10 +71,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * GET /api/v1/products/search?q={query}
-     * Buscar productos por nombre
-     */
+    // GET /api/v1/products/search?q={query} Buscar productos por nombre
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<Product>>> searchProducts(@RequestParam String q) {
         try {
@@ -98,10 +83,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * GET /api/v1/products/featured
-     * Obtener productos destacados - equivalente a featuredProducts
-     */
+    // GET /api/v1/products/featured Obtener productos destacados - equivalente a featuredProducts
     @GetMapping("/featured")
     public ResponseEntity<ApiResponse<List<Product>>> getFeaturedProducts() {
         try {
@@ -113,10 +95,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * POST /api/v1/products
-     * Crear producto (solo admin)
-     */
+    // POST /api/v1/products Crear producto (solo admin)
     @PostMapping
     public ResponseEntity<ApiResponse<Product>> createProduct(@RequestBody Product product) {
         try {
@@ -128,10 +107,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * PUT /api/v1/products/{id}
-     * Actualizar producto (solo admin)
-     */
+    // PUT /api/v1/products/{id} Actualizar producto (solo admin)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Product>> updateProduct(
             @PathVariable Long id,
@@ -145,10 +121,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * DELETE /api/v1/products/{id}
-     * Eliminar producto (solo admin)
-     */
+    // DELETE /api/v1/products/{id} Eliminar producto (solo admin)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
         try {

@@ -16,10 +16,7 @@ public class UserController {
     @Autowired
     private UserService userService;
     
-    /**
-     * POST /api/v1/users/login
-     * Login de usuario - replica la función login() del AuthContext
-     */
+    // POST /api/v1/users/login Login de usuario - replica la función login() del AuthContext
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         try {
@@ -31,10 +28,7 @@ public class UserController {
         }
     }
     
-    /**
-     * POST /api/v1/users/register
-     * Registro de usuario - replica la función register() del AuthContext
-     */
+    // POST /api/v1/users/register Registro de usuario - replica la función register() del AuthContext
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
         try {
@@ -46,10 +40,7 @@ public class UserController {
         }
     }
     
-    /**
-     * GET /api/v1/users
-     * Obtener todos los usuarios (solo admin)
-     */
+    // GET /api/v1/users Obtener todos los usuarios (solo admin)
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers() {
         try {
@@ -61,10 +52,7 @@ public class UserController {
         }
     }
     
-    /**
-     * GET /api/v1/users/{id}
-     * Obtener usuario por ID
-     */
+    // GET /api/v1/users/{id} Obtener usuario por ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long id) {
         try {
@@ -79,10 +67,7 @@ public class UserController {
         }
     }
     
-    /**
-     * GET /api/v1/users/email/{email}
-     * Obtener usuario por email
-     */
+    // GET /api/v1/users/email/{email} Obtener usuario por email
     @GetMapping("/email/{email}")
     public ResponseEntity<ApiResponse<UserDTO>> getUserByEmail(@PathVariable String email) {
         try {

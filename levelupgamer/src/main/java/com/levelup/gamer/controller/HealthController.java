@@ -15,10 +15,7 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 public class HealthController {
     
-    /**
-     * GET /api/v1/health
-     * Endpoint de salud para verificar que el backend está funcionando
-     */
+    // GET /api/v1/health Endpoint de salud para verificar que el backend está funcionando
     @GetMapping("/health")
     public ApiResponse<Map<String, Object>> healthCheck() {
         Map<String, Object> health = new HashMap<>();
@@ -30,10 +27,7 @@ public class HealthController {
         return ApiResponse.success("Backend funcionando correctamente", health);
     }
     
-    /**
-     * GET /api/v1/info
-     * Información general de la API
-     */
+    // GET /api/v1/info Información general de la API
     @GetMapping("/info")
     public ApiResponse<Map<String, Object>> apiInfo() {
         Map<String, Object> info = new HashMap<>();

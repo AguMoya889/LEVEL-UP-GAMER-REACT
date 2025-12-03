@@ -19,10 +19,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     
-    /**
-     * POST /api/v1/orders/checkout
-     * Procesar checkout - replica la función checkout() del CartContext
-     */
+    // POST /api/v1/orders/checkout Procesar checkout - replica la función checkout() del CartContext
     @PostMapping("/checkout")
     public ResponseEntity<CheckoutResponse> checkout(
             @RequestBody CheckoutRequest request,
@@ -36,10 +33,7 @@ public class OrderController {
         }
     }
     
-    /**
-     * GET /api/v1/orders
-     * Obtener todas las órdenes (solo admin)
-     */
+    // GET /api/v1/orders Obtener todas las órdenes (solo admin)
     @GetMapping
     public ResponseEntity<ApiResponse<List<Order>>> getAllOrders() {
         try {
@@ -51,10 +45,7 @@ public class OrderController {
         }
     }
     
-    /**
-     * GET /api/v1/orders/{id}
-     * Obtener orden por ID
-     */
+    // GET /api/v1/orders/{id} Obtener orden por ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Order>> getOrderById(@PathVariable Long id) {
         try {
@@ -69,10 +60,7 @@ public class OrderController {
         }
     }
     
-    /**
-     * GET /api/v1/orders/order-id/{orderId}
-     * Obtener orden por OrderId
-     */
+    // GET /api/v1/orders/order-id/{orderId} Obtener orden por OrderId
     @GetMapping("/order-id/{orderId}")
     public ResponseEntity<ApiResponse<Order>> getOrderByOrderId(@PathVariable String orderId) {
         try {
@@ -87,10 +75,7 @@ public class OrderController {
         }
     }
     
-    /**
-     * GET /api/v1/orders/user/{userId}
-     * Obtener órdenes de un usuario
-     */
+    // GET /api/v1/orders/user/{userId} Obtener órdenes de un usuario
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<List<Order>>> getOrdersByUser(@PathVariable Long userId) {
         try {
@@ -102,10 +87,7 @@ public class OrderController {
         }
     }
     
-    /**
-     * GET /api/v1/orders/email/{email}
-     * Obtener órdenes por email - para historial de compras
-     */
+    // GET /api/v1/orders/email/{email} Obtener órdenes por email - para historial de compras
     @GetMapping("/email/{email}")
     public ResponseEntity<ApiResponse<List<Order>>> getOrdersByEmail(@PathVariable String email) {
         try {
@@ -117,10 +99,7 @@ public class OrderController {
         }
     }
     
-    /**
-     * GET /api/v1/orders/status/{estado}
-     * Obtener órdenes por estado (PENDIENTE, COMPLETADO, CANCELADO)
-     */
+    // GET /api/v1/orders/status/{estado} Obtener órdenes por estado (PENDIENTE, COMPLETADO, CANCELADO)
     @GetMapping("/status/{estado}")
     public ResponseEntity<ApiResponse<List<Order>>> getOrdersByStatus(@PathVariable String estado) {
         try {
@@ -132,10 +111,7 @@ public class OrderController {
         }
     }
     
-    /**
-     * PATCH /api/v1/orders/{id}/status
-     * Actualizar estado de orden (solo admin)
-     */
+    // PATCH /api/v1/orders/{id}/status Actualizar estado de orden (solo admin)
     @PatchMapping("/{id}/status")
     public ResponseEntity<ApiResponse<Order>> updateOrderStatus(
             @PathVariable Long id,
