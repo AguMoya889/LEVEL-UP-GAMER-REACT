@@ -23,6 +23,7 @@ com\levelup\gamer\repository\OrderRepository.class
 com\levelup\gamer\model\Order.class
 com\levelup\gamer\config\SecurityConfig.class
 com\levelup\gamer\controller\OrderController.class
+com\levelup\gamer\config\SwaggerConfig.class
 com\levelup\gamer\dto\ApiResponse.class
 com\levelup\gamer\LevelupgamerApplication.class
 com\levelup\gamer\service\StatsService.class

@@ -83,18 +83,19 @@ public class OrderService {
         
         // Crear OrderItems
         for (CartItemDTO item : request.getItems()) {
+            // Buscar producto primero para obtener el nombre
+            Product product = productRepository.findBySlug(item.getProductSlug()).orElse(null);
+            if (product == null) {
+                throw new RuntimeException("Producto no encontrado: " + item.getProductSlug());
+            }
+            
             OrderItem orderItem = new OrderItem();
             orderItem.setSlug(item.getProductSlug());
+            orderItem.setNombre(product.getNombre()); // ← CRÍTICO: Ahora siempre tiene nombre
             orderItem.setPrecio(item.getPrice());
             orderItem.setCantidad(item.getQuantity());
             orderItem.setSubtotal(item.getPrice() * item.getQuantity());
-            
-            // Buscar producto y asociarlo
-            Product product = productRepository.findBySlug(item.getProductSlug()).orElse(null);
-            if (product != null) {
-                orderItem.setProduct(product);
-                orderItem.setNombre(product.getNombre());
-            }
+            orderItem.setProduct(product);
             
             order.addItem(orderItem);
         }
@@ -103,9 +104,12 @@ public class OrderService {
         
         return new CheckoutResponse(true, "Compra realizada exitosamente", orderId);
     }
-// Obtener todas las órdenes
+    // Obtener todas las órdenes
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+        // Forzar carga de items para evitar LazyInitializationException
+        orders.forEach(order -> order.getItems().size());
+        return orders;
     }
 // Obtener orden por ID
     public Order getOrderById(Long id) {
@@ -127,14 +131,17 @@ public class OrderService {
     public List<Order> getOrdersByStatus(String estado) {
         return orderRepository.findByEstado(estado);
     }
-// Actualizar estado de orden
+    // Actualizar estado de orden
     public Order updateOrderStatus(Long id, String estado) {
-        Order order = orderRepository.findById(id).orElse(null);
-        if (order == null) {
-            throw new RuntimeException("Orden no encontrada");
+        Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + id));
+        
+        // Validar estado
+        if (estado == null || estado.trim().isEmpty()) {
+            throw new RuntimeException("Estado no válido");
         }
         
-        order.setEstado(estado);
+        order.setEstado(estado.toUpperCase());
         return orderRepository.save(order);
     }
 }
